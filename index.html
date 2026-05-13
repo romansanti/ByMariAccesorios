@@ -93,8 +93,8 @@
             <h2 class="playfair">MI CARRITO</h2>
             <div id="close-sidebar" style="cursor:pointer; font-size:2rem;">&times;</div>
         </div>
-        <div id="cart-items-sidebar" class="cart-body"></div>
-        <div class="cart-footer" style="background: white; padding: 20px; border-radius: 20px 20px 0 0;">
+        <div id="cartItems" class="cart-body"></div>
+        <div class="cart-footer">
             <div class="subtotal-row" style="display: flex; justify-content: space-between; font-weight:bold; margin-bottom: 15px;">
                 <span>TOTAL:</span><span id="total-price-sidebar">$0</span>
             </div>
@@ -106,6 +106,14 @@
     <a href="https://wa.me/5493813520315" class="whatsapp-float" target="_blank">
         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
     </a>
+
+    <div id="image-modal" class="image-modal">
+        <div class="image-modal-content">
+            <button id="close-image-modal" class="image-modal-close" aria-label="Cerrar imagen">&times;</button>
+            <img id="modal-image" src="" alt="Imagen ampliada del producto">
+            <div id="modal-image-title" class="image-modal-title"></div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

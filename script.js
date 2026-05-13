@@ -76,8 +76,21 @@ function mostrarProductos(lista) {
             <button class="btn-add" ${sinStock ? 'disabled style="background:#888;"' : ''} onclick="agregar('${p.id}')">
                 ${sinStock ? 'SIN STOCK' : 'AGREGAR'}
             </button>`;
+        const img = div.querySelector('.product-img-tag');
+        img.onclick = () => verImagen(p.imagen, p.nombre);
         grid.appendChild(div);
     });
+}
+
+function verImagen(src, title) {
+    const modal = document.getElementById('image-modal');
+    document.getElementById('modal-image').src = src;
+    document.getElementById('modal-image-title').innerText = title;
+    modal.classList.add('open');
+}
+
+function cerrarImagen() {
+    document.getElementById('image-modal').classList.remove('open');
 }
 
 function agregar(id) {
@@ -92,7 +105,7 @@ function agregar(id) {
 
 function actualizarCarrito() {
     document.getElementById('cart-count').innerText = carrito.length;
-    const list = document.getElementById('cart-items-sidebar');
+    const list = document.getElementById('cartItems');
     const totalS = document.getElementById('total-price-sidebar');
     list.innerHTML = "";
     let total = 0;
@@ -151,6 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('close-sidebar').onclick = () => document.getElementById('side-cart').classList.remove('open');
     document.getElementById('btn-vaciar-carrito').onclick = vaciarCarrito;
     document.getElementById('btn-to-checkout').onclick = irAlCheckout;
+    document.getElementById('close-image-modal').onclick = cerrarImagen;
+    document.getElementById('image-modal').onclick = (e) => {
+        if (e.target.id === 'image-modal') cerrarImagen();
+    };
 });
 
 document.getElementById('searchInput').oninput = (e) => {
