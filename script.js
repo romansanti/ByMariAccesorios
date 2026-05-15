@@ -7,6 +7,7 @@ function obtenerUrlDinamica() {
 
 let productos = [];
 let carrito = [];
+let categoriaActiva = "inicio";
 
 async function fetchProductos() {
     try {
@@ -29,7 +30,9 @@ async function fetchProductos() {
                 precio: parseFloat(getV(2)) || 0,
                 categoria: getV(3) || "Varios",
                 stock: parseInt(getV(4)) || 0,
-                imagen: getV(5) || 'https://via.placeholder.com/400'
+                imagen: getV(5) || 'https://via.placeholder.com/400',
+                precioTarjeta: parseFloat(getV(6)) || 0,
+                precioAnterior: parseFloat(getV(7)) || 0
             };
         }).filter(p => p.nombre !== "Producto");
 
@@ -52,12 +55,16 @@ function generarMenuCategorias() {
         link.onclick = (e) => {
             e.preventDefault();
             const cat = link.getAttribute('data-categoria');
-            if(cat === "inicio") { volverTienda(); }
-            else {
+            categoriaActiva = cat;
+
+            if(cat === "inicio") { 
+                volverTienda(); 
+            } else {
                 const filtrados = productos.filter(p => p.categoria.toLowerCase() === cat);
                 mostrarProductos(filtrados);
                 window.scrollTo({ top: document.getElementById('productos').offsetTop - 120, behavior: 'smooth' });
             }
+            document.getElementById('filterPrice').value = "default";
         };
     });
 }
@@ -67,12 +74,20 @@ function mostrarProductos(lista) {
     grid.innerHTML = "";
     lista.forEach(p => {
         const sinStock = p.stock <= 0;
+        const tieneDescuento = p.precioAnterior > p.precio;
+        const precioConRecargo = p.precio * 1.25;
+        const valorCuota = precioConRecargo / 3;
+
         const div = document.createElement('div');
         div.className = 'product-card';
         div.innerHTML = `
             <div class="product-img-container"><img src="${p.imagen}" class="product-img-tag" onerror="this.src='https://via.placeholder.com/400'"></div>
             <h3>${p.nombre.toUpperCase()}</h3>
-            <p>$${p.precio.toLocaleString('es-AR')}</p>
+            <div class="price-container">
+                ${tieneDescuento ? `<span class="old-price">$${p.precioAnterior.toLocaleString('es-AR')}</span>` : ''}
+                <span class="current-price">$${p.precio.toLocaleString('es-AR')}</span>
+            </div>
+            <p class="card-price">3 cuotas sin interés de $${valorCuota.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
             <button class="btn-add" ${sinStock ? 'disabled style="background:#888;"' : ''} onclick="agregar('${p.id}')">
                 ${sinStock ? 'SIN STOCK' : 'AGREGAR'}
             </button>`;
@@ -80,6 +95,16 @@ function mostrarProductos(lista) {
         img.onclick = () => verImagen(p.imagen, p.nombre);
         grid.appendChild(div);
     });
+}
+
+function ordenarProductos(criterio, lista) {
+    let copia = [...lista];
+    if (criterio === "low") {
+        copia.sort((a, b) => a.precio - b.precio);
+    } else if (criterio === "high") {
+        copia.sort((a, b) => b.precio - a.precio);
+    }
+    mostrarProductos(copia);
 }
 
 function verImagen(src, title) {
@@ -148,12 +173,21 @@ document.getElementById('checkout-form').onsubmit = (e) => {
     const tel = document.getElementById('check-phone').value;
     const dir = document.getElementById('check-address').value || "A convenir";
     const pago = document.getElementById('check-payment').value;
-    const total = document.getElementById('total-price-sidebar').innerText;
+
+    let totalEfectivo = 0;
+    carrito.forEach(p => totalEfectivo += p.precio);
+
+    const totalConTarjeta = totalEfectivo * 1.25;
+    const montoAMostrar = (pago === "Tarjeta (3 cuotas)") ? totalConTarjeta : totalEfectivo;
 
     let msg = `*BYMARI - NUEVO PEDIDO*%0A%0A`;
     msg += `*Cliente:* ${nombre}%0A*WhatsApp:* ${tel}%0A*Dirección:* ${dir}%0A*Pago:* ${pago}%0A%0A*PRODUCTOS:*%0A`;
     carrito.forEach(p => msg += `- ${p.nombre} ($${p.precio})%0A`);
-    msg += `%0A*TOTAL: ${total}*`;
+    msg += `%0A*TOTAL A PAGAR: $${montoAMostrar.toLocaleString('es-AR')}*`;
+
+    if(pago === "Tarjeta (3 cuotas)") {
+        msg += `%0A_(Incluye recargo del 25% por financiación en 3 cuotas)_`;
+    }
     
     window.open(`https://wa.me/5493813520315?text=${msg}`);
 };
@@ -167,6 +201,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('close-image-modal').onclick = cerrarImagen;
     document.getElementById('image-modal').onclick = (e) => {
         if (e.target.id === 'image-modal') cerrarImagen();
+    };
+    document.getElementById('filterPrice').onchange = (e) => {
+        const criterio = e.target.value;
+        let listaAmostrar = (categoriaActiva === "inicio") 
+            ? [...productos] 
+            : productos.filter(p => p.categoria.toLowerCase() === categoriaActiva);
+
+        if (criterio === "low") {
+            listaAmostrar.sort((a, b) => a.precio - b.precio);
+        } else if (criterio === "high") {
+            listaAmostrar.sort((a, b) => b.precio - a.precio);
+        }
+
+        mostrarProductos(listaAmostrar);
     };
 });
 

@@ -204,6 +204,70 @@ header {
 .toast { visibility: hidden; position: fixed; top: 120px; right: 20px; background: #000; color: #fff; padding: 12px 25px; border-radius: 50px; z-index: 3000; opacity: 0; transition: 0.3s; }
 .toast.show { visibility: visible; opacity: 1; }
 
+/* Contenedor de precios */
+.price-container {
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Precio actual (el importante) */
+.current-price {
+    font-size: 1.1rem;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+/* Precio tachado */
+.old-price {
+    font-size: 0.85rem;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 400;
+}
+
+/* Texto de cuotas/tarjeta */
+.card-price {
+    font-size: 0.7rem !important;
+    color: #27ae60 !important;
+    margin-top: -5px;
+    margin-bottom: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px;
+}
+
+.filters-container {
+    padding: 0 5%;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.filter-group select {
+    padding: 8px 15px;
+    border-radius: 50px;
+    border: 1px solid #ddd;
+    background: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    outline: none;
+    cursor: pointer;
+}
+
 /* Desktop */
 @media (min-width: 769px) {
     .nav-container { flex-direction: row; justify-content: space-between; padding: 15px 5%; }
