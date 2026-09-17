@@ -36,8 +36,17 @@ header {
 .search-icon-header { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #888; }
 .cart-trigger { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 50px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: bold; }
 
-/* --- BANNER Y BOTÓN NEGRO --- */
-.hero-wrapper { margin-top: 170px; padding: 0 4%; }
+./* --- BANNER Y BOTÓN NEGRO --- */
+.hero-wrapper {
+    margin-top: 105px; /* Altura justa para que no tape el header fijo */
+    padding: 0 4%;
+}
+
+@media (max-width: 600px) {
+    .hero-wrapper {
+        margin-top: 95px; /* Más pegadito todavía en celular */
+    }
+}
 .slide { width: 100%; height: 40vh; background-size: cover; background-position: center; border-radius: 20px; display: flex; justify-content: center; align-items: center; background-color: #000; }
 .hero-content { text-align: center; color: white; padding: 25px; background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.2); }
 .hero-content h1 { font-size: 2.2rem; letter-spacing: 6px; margin-bottom: 20px; }
@@ -312,40 +321,39 @@ header {
     margin: 0 auto;
 }
 
-/* Buscador chico y compacto */
+/* Buscador chico y compacto alineado */
 .header-search {
     position: relative;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     flex-shrink: 0;
-    width: 130px; /* Tamaño controlado */
+    width: 140px;
+    height: 32px;
 }
 
 .header-search input {
     width: 100% !important;
-    max-width: 130px !important;
-    height: 32px;
-    padding: 4px 8px 4px 28px !important;
-    border-radius: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    background: #fff;
-    font-size: 0.78rem;
-    box-sizing: border-box;
-    transition: width 0.2s ease;
-}
-
-.header-search input:focus {
-    width: 160px !important;
-    max-width: 160px !important;
+    height: 100% !important;
+    padding: 0 12px 0 32px !important;
+    border-radius: 50px !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    background: #fff !important;
+    font-size: 0.78rem !important;
     outline: none;
-    border-color: #000;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
 
 .search-icon-header {
     position: absolute;
-    left: 9px;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     pointer-events: none;
-    color: #666;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Categorías deslizables */
@@ -481,3 +489,4 @@ header {
         height: 170px !important;
     }
 }
+
