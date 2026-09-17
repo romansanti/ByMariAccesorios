@@ -12,23 +12,29 @@
     <div id="toast-notification" class="toast">¡Añadido al carrito! ✨</div>
 
     <header id="main-header">
-        <nav class="nav-container">
+        <!-- Fila 1: Logo centrado arriba -->
+        <div class="header-logo-row">
             <div class="logo" onclick="volverTienda()">BYMARI</div>
-            <ul class="nav-links" id="menu-categorias">
-                <li><a href="#" data-categoria="inicio">INICIO</a></li>
-            </ul>
+        </div>
 
-            <div class="nav-right-mobile">
-                <div class="header-search">
-                    <svg class="search-icon-header" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" id="searchInput" placeholder="Buscar...">
-                </div>
-                <button id="cart-btn" class="cart-trigger">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                    <span id="cart-count">0</span>
-                </button>
+        <!-- Fila 2: Lupa + Categorías + Carrito -->
+        <div class="header-nav-row">
+            <div class="header-search">
+                <svg class="search-icon-header" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" placeholder="Buscar...">
             </div>
-        </nav>
+
+            <nav class="nav-categories-bar">
+                <ul class="nav-links" id="menu-categorias">
+                    <li><a href="#" data-categoria="inicio">INICIO</a></li>
+                </ul>
+            </nav>
+
+            <button id="cart-btn" class="cart-trigger">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span id="cart-count">0</span>
+            </button>
+        </div>
     </header>
 
     <div id="tienda-content">
@@ -112,7 +118,7 @@
         </div>
     </div>
 
-    <a href="https://wa.me/5493813520315" class="whatsapp-float" target="_blank">
+    <a href="https://wa.me/5493813634653" class="whatsapp-float" target="_blank">
         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
     </a>
 

@@ -268,12 +268,216 @@ header {
     cursor: pointer;
 }
 
-/* Desktop */
-@media (min-width: 769px) {
-    .nav-container { flex-direction: row; justify-content: space-between; padding: 15px 5%; }
-    .nav-links { justify-content: center; overflow: visible; width: auto; }
-    .product-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-    .hero-wrapper { margin-top: 140px; }
-    .slide { height: 60vh; }
-    .product-card h3 { font-size: 0.85rem; height: auto; }
+/* ==========================================
+   HEADER: LOGO ARRIBA CENTRADO Y BARRA COMPACTA
+   ========================================== */
+
+#main-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #f7ede2;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 8px 15px;
+    box-sizing: border-box;
+}
+
+/* Fila 1: Logo centrado */
+.header-logo-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 6px;
+}
+
+.header-logo-row .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #333;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* Fila 2: Lupa + Categorías + Carrito */
+.header-nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    max-width: 1250px;
+    margin: 0 auto;
+}
+
+/* Buscador chico y compacto */
+.header-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: 130px; /* Tamaño controlado */
+}
+
+.header-search input {
+    width: 100% !important;
+    max-width: 130px !important;
+    height: 32px;
+    padding: 4px 8px 4px 28px !important;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #fff;
+    font-size: 0.78rem;
+    box-sizing: border-box;
+    transition: width 0.2s ease;
+}
+
+.header-search input:focus {
+    width: 160px !important;
+    max-width: 160px !important;
+    outline: none;
+    border-color: #000;
+}
+
+.search-icon-header {
+    position: absolute;
+    left: 9px;
+    pointer-events: none;
+    color: #666;
+}
+
+/* Categorías deslizables */
+.nav-categories-bar {
+    flex-grow: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    min-width: 0;
+}
+
+.nav-categories-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-links {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 2px 0;
+    width: max-content;
+}
+
+.nav-links li a {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.nav-links li a:hover,
+.nav-links li a.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+/* Botón Carrito */
+.cart-trigger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 5px;
+}
+
+.cart-trigger svg {
+    stroke: #222;
+}
+
+#cart-count {
+    position: absolute;
+    top: 0px;
+    right: -2px;
+    background: #000;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 17px;
+    height: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================
+   GRILLA DE PRODUCTOS COMPACTA (4 POR FILA)
+   ========================================== */
+
+.product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
+    max-width: 1250px !important;
+    margin: 30px auto !important;
+    padding: 0 20px !important;
+}
+
+/* Tarjeta del producto contenida */
+.product-card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Contenedor de la foto para que no sea gigante */
+.product-card img,
+.product-image-container img {
+    width: 100% !important;
+    height: 260px !important;
+    object-fit: cover !important;
+    display: block;
+}
+
+/* En tablets: 3 por fila */
+@media (max-width: 1024px) {
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 15px !important;
+    }
+    .product-card img,
+    .product-image-container img {
+        height: 230px !important;
+    }
+}
+
+/* En celulares: 2 por fila */
+@media (max-width: 600px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        padding: 0 10px !important;
+    }
+    .product-card img,
+    .product-image-container img {
+        height: 170px !important;
+    }
 }

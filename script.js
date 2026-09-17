@@ -1,8 +1,8 @@
 const SHEET_ID = '1ihLGVsj-uJicHhdz5MlWVxrjROE7qLAowX8Ce2kI9Ig';
+const SCRIPT_STOCK_URL = 'https://script.google.com/macros/s/AKfycbxRBesk9cmej8w6Rn0n1j_1i3ZvppTDgCPF863_azxEOdYFgGLgfDUsRNvi6u87kYYJDA/exec';
 
 function obtenerUrlDinamica() {
-    const timestamp = new Date().getTime();
-    return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&t=${timestamp}`;
+    return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0`;
 }
 
 let productos = [];
@@ -18,7 +18,7 @@ async function fetchProductos() {
         const rows = json.table.rows;
 
         const bannerCell = rows[0] && rows[0].c[7];
-        if(bannerCell && bannerCell.v) {
+        if (bannerCell && bannerCell.v) {
             document.getElementById('main-banner').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${bannerCell.v}')`;
         }
 
@@ -38,7 +38,9 @@ async function fetchProductos() {
 
         generarMenuCategorias();
         mostrarProductos(productos);
-    } catch (e) { console.error("Error cargando stock", e); }
+    } catch (e) { 
+        console.error("Error cargando stock", e); 
+    }
 }
 
 function generarMenuCategorias() {
@@ -57,7 +59,7 @@ function generarMenuCategorias() {
             const cat = link.getAttribute('data-categoria');
             categoriaActiva = cat;
 
-            if(cat === "inicio") { 
+            if (cat === "inicio") { 
                 volverTienda(); 
             } else {
                 const filtrados = productos.filter(p => p.categoria.toLowerCase() === cat);
@@ -120,7 +122,7 @@ function cerrarImagen() {
 
 function agregar(id) {
     const p = productos.find(x => x.id == id);
-    if(!p || p.stock <= 0) return;
+    if (!p || p.stock <= 0) return;
     carrito.push(p);
     actualizarCarrito();
     const t = document.getElementById('toast-notification');
@@ -137,17 +139,20 @@ function actualizarCarrito() {
     carrito.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'cart-item';
-        div.innerHTML = `<div><b>${item.nombre}</b><br><small>$${item.precio}</small></div><span onclick="quitar(${index})" style="color:red; cursor:pointer; font-weight:bold; font-size:1.2rem;">&times;</span>`;
+        div.innerHTML = `<div><b>${item.nombre}</b><br><small>$${item.precio.toLocaleString('es-AR')}</small></div><span onclick="quitar(${index})" style="color:red; cursor:pointer; font-weight:bold; font-size:1.2rem;">&times;</span>`;
         list.appendChild(div);
         total += item.precio;
     });
     totalS.innerText = `$${total.toLocaleString('es-AR')}`;
 }
 
-function quitar(idx) { carrito.splice(idx, 1); actualizarCarrito(); }
+function quitar(idx) { 
+    carrito.splice(idx, 1); 
+    actualizarCarrito(); 
+}
 
 function vaciarCarrito() {
-    if(carrito.length > 0 && confirm("¿Vaciar todo el carrito?")) {
+    if (carrito.length > 0 && confirm("¿Vaciar todo el carrito?")) {
         carrito = [];
         actualizarCarrito();
     }
@@ -160,36 +165,108 @@ function volverTienda() {
 }
 
 function irAlCheckout() {
-    if(carrito.length === 0) return alert("Carrito vacío");
+    if (carrito.length === 0) return alert("Carrito vacío");
     document.getElementById('tienda-content').style.display = 'none';
     document.getElementById('checkout-section').style.display = 'block';
     document.getElementById('side-cart').classList.remove('open');
     window.scrollTo(0,0);
 }
 
-document.getElementById('checkout-form').onsubmit = (e) => {
+// Envío del pedido con validación anti-trolls y protección anti-spam
+document.getElementById('checkout-form').onsubmit = function (e) {
     e.preventDefault();
-    const nombre = document.getElementById('check-name').value;
-    const tel = document.getElementById('check-phone').value;
-    const dir = document.getElementById('check-address').value || "A convenir";
+
+    // 1. Filtro Anti-Spam (cooldown de 5 minutos entre pedidos del mismo dispositivo)
+    const ultimoPedido = localStorage.getItem('ultimo_pedido_timestamp');
+    const ahora = new Date().getTime();
+    if (ultimoPedido && (ahora - parseInt(ultimoPedido)) < 300000) {
+        const segundosRestantes = Math.ceil((300000 - (ahora - parseInt(ultimoPedido))) / 1000);
+        alert(`Ya registramos un pedido reciente desde este dispositivo. Por favor aguardá ${segundosRestantes} segundos antes de enviar otro.`);
+        return;
+    }
+
+    const nombre = document.getElementById('check-name').value.trim();
+    const tel = document.getElementById('check-phone').value.trim().replace(/[\s\-\(\)]/g, '');
+    const direccion = document.getElementById('check-address').value.trim();
     const pago = document.getElementById('check-payment').value;
 
-    let totalEfectivo = 0;
-    carrito.forEach(p => totalEfectivo += p.precio);
-
-    const totalConTarjeta = totalEfectivo * 1.25;
-    const montoAMostrar = (pago === "Tarjeta (3 cuotas)") ? totalConTarjeta : totalEfectivo;
-
-    let msg = `*BYMARI - NUEVO PEDIDO*%0A%0A`;
-    msg += `*Cliente:* ${nombre}%0A*WhatsApp:* ${tel}%0A*Dirección:* ${dir}%0A*Pago:* ${pago}%0A%0A*PRODUCTOS:*%0A`;
-    carrito.forEach(p => msg += `- ${p.nombre} ($${p.precio})%0A`);
-    msg += `%0A*TOTAL A PAGAR: $${montoAMostrar.toLocaleString('es-AR')}*`;
-
-    if(pago === "Tarjeta (3 cuotas)") {
-        msg += `%0A_(Incluye recargo del 25% por financiación en 3 cuotas)_`;
+    // 2. Validación de Nombre (al menos 2 palabras)
+    if (nombre.length < 4 || !nombre.includes(' ')) {
+        alert('Por favor ingresá tu nombre y apellido completo.');
+        document.getElementById('check-name').focus();
+        return;
     }
-    
-    window.open(`https://wa.me/5493813520315?text=${msg}`);
+
+    // 3. Validación de Teléfono Argentino (mínimo 10 dígitos)
+    const regexTel = /^[0-9]{10,13}$/;
+    if (!regexTel.test(tel)) {
+        alert('Por favor ingresá un número de teléfono válido (código de área + número, ej: 3814567890).');
+        document.getElementById('check-phone').focus();
+        return;
+    }
+
+    if (carrito.length === 0) {
+        alert('El carrito está vacío.');
+        return;
+    }
+
+    // Agrupar items repetidos
+    const conteo = {};
+    carrito.forEach(item => {
+        if (!conteo[item.nombre]) {
+            conteo[item.nombre] = { ...item, cantidad: 0 };
+        }
+        conteo[item.nombre].cantidad += 1;
+    });
+    const itemsAgrupados = Object.values(conteo);
+
+    // Armar detalle y total
+    let detalle = '';
+    let total = 0;
+
+    itemsAgrupados.forEach(item => {
+        const sub = item.precio * item.cantidad;
+        total += sub;
+        detalle += `• ${item.nombre} x${item.cantidad} - $${sub.toLocaleString('es-AR')}\n`;
+    });
+
+    let msg = `*NUEVO PEDIDO - BYMARI*\n\n`;
+    msg += `*Cliente:* ${nombre}\n`;
+    msg += `*Teléfono:* ${tel}\n`;
+    if (direccion) msg += `*Dirección:* ${direccion}\n`;
+    msg += `*Método de Pago:* ${pago}\n\n`;
+    msg += `*Detalle:*\n${detalle}\n`;
+    msg += `*Total:* $${total.toLocaleString('es-AR')}`;
+
+    // Disparar actualización de stock y registro en Sheet
+    fetch(SCRIPT_STOCK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            cliente: nombre,
+            telefono: tel,
+            direccion: direccion,
+            pago: pago,
+            total: total,
+            items: itemsAgrupados.map(item => ({
+                id: item.id || '',
+                nombre: item.nombre,
+                cantidad: item.cantidad
+            }))
+        })
+    }).catch(err => console.error('Error al actualizar stock:', err));
+
+    // Guardar marca de tiempo para evitar spam
+    localStorage.setItem('ultimo_pedido_timestamp', ahora.toString());
+
+    // Abrir WhatsApp
+    const encodedMsg = encodeURIComponent(msg);
+    window.location.href = `https://wa.me/5493813634653?text=${encodedMsg}`;
+
+    // Limpiar carrito
+    carrito = [];
+    actualizarCarrito();
 };
 
 document.addEventListener('DOMContentLoaded', () => {
