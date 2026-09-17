@@ -17,7 +17,7 @@ async function fetchProductos() {
         const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
         const rows = json.table.rows;
 
-        const bannerCell = rows[0] && rows[0].c[7];
+        const bannerCell = rows[0] && rows[0].c[8];
         if (bannerCell && bannerCell.v) {
             document.getElementById('main-banner').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${bannerCell.v}')`;
         }
